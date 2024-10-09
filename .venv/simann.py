@@ -7,15 +7,15 @@ Cities = [
 	(148, 67), (151, 183), (80, 196), (194, 92), (141, 152),
 	(73, 78), (82, 17), (60, 159), (142, 159), (96, 24),
 	(97, 6), (168, 80), (78, 179), (175, 49), (42, 138),
-	#(83, 116), (153, 89), (137, 60), (45, 5), (91, 150),
-	#(168, 190), (194, 116), (50, 196), (150, 10), (10, 100),
-	#(150, 50), (190, 150), (80, 160), (120, 50), (110, 10),
-	#(10, 190), (190, 10), (10, 10), (190, 190), (50, 50)
+	(83, 116), (153, 89), (137, 60), (45, 5), (91, 150),
+	(168, 190), (194, 116), (50, 196), (150, 10), (10, 100),
+	(150, 50), (190, 150), (80, 160), (120, 50), (110, 10),
+	(10, 190), (190, 10), (10, 10), (190, 190), (50, 50)
 ]
 
 
-initial_temp = 100000
-cooling_rate = 0.995
+initial_temp = 100
+cooling_rate = 0.9999
 stopping_temp = 1
 
 def distance(city1, city2):
@@ -27,11 +27,10 @@ def fitness(route):
 	for i in range(len(route) - 1):
 		td += distance(Cities[route[i]], Cities[route[i + 1]])
 	total_distance = td
-	total_distance += distance(Cities[route[-1]], Cities[route[0]])  # Замыкаем маршрут
+	total_distance += distance(Cities[route[-1]], Cities[route[0]])
 	return total_distance
 
 
-# Генерация начального решения
 def initial_solution():
 	individual = list(range(len(Cities)))
 	random.shuffle(individual)
@@ -39,7 +38,6 @@ def initial_solution():
 
 
 
-# Генерация соседнего решения
 def generate_neighbor(solution):
 
     roulette = random.uniform(0, 1)
@@ -78,17 +76,16 @@ def simulated_annealing(initial_temp, cooling_rate, stopping_temp):
         neighbor = generate_neighbor(current_solution)
         neighbor_distance = fitness(neighbor)
 
-        # Если сосед лучше, принимаем его
+
         if neighbor_distance < current_distance:
             current_solution = neighbor
             current_distance = neighbor_distance
 
-            # Обновляем лучшее решение
+
             if neighbor_distance < best_distance:
                 best_solution = neighbor
                 best_distance = neighbor_distance
 
-        # Если сосед хуже, принимаем его с некоторой вероятностью
         else:
             probability = np.exp((current_distance - neighbor_distance) / temperature)
             if random.random() < probability:
@@ -96,7 +93,6 @@ def simulated_annealing(initial_temp, cooling_rate, stopping_temp):
                 current_distance = neighbor_distance
 
         iterations += 1
-        # Охлаждаем систему
         temperature *= cooling_rate
 
         distances_per_iteration.append(current_distance)
@@ -118,7 +114,6 @@ def plot_route(best_solution, best_distance, distances_per_iteration, iterations
     for i, (xi, yi) in enumerate(Cities):
         plt.text(xi, yi, f"City {i + 1}", fontsize=10)
 
-	# Добавление текста для итогового пути
     plt.title(f'Best Route Found by Simulated Annealing: {best_distance}\nIterations: {iterations}', fontsize=12)
     plt.legend()
     plt.grid(True)

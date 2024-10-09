@@ -7,10 +7,10 @@ Cities = [
 	(148, 67), (151, 183), (80, 196), (194, 92), (141, 152),
 	(73, 78), (82, 17), (60, 159), (142, 159), (96, 24),
 	(97, 6), (168, 80), (78, 179), (175, 49), (42, 138),
-	#(83, 116), (153, 89), (137, 60), (45, 5), (91, 150),
-	#(168, 190), (194, 116), (50, 196), (150, 10), (10, 100),
-	#(150, 50), (190, 150), (80, 160), (120, 50), (110, 10),
-	#(10, 190), (190, 10), (10, 10), (190, 190), (50, 50)
+	(83, 116), (153, 89), (137, 60), (45, 5), (91, 150),
+	(168, 190), (194, 116), (50, 196), (150, 10), (10, 100),
+	(150, 50), (190, 150), (80, 160), (120, 50), (110, 10),
+	(10, 190), (190, 10), (10, 10), (190, 190), (50, 50)
 ]
 
 population_size = 800
@@ -33,7 +33,6 @@ def fitness(route):
 	return total_distance
 
 
-# Генерация начальной популяции
 def generate_population(population_size):
 	population = []
 	for _ in range(population_size):
@@ -53,12 +52,12 @@ def tournament_selection(population, fitness_values):
 
 
 def roulette_selection(population, fitness_values):
-	# creation of random value
+
 	total_fitness = 0
 	for f in fitness_values:
 		total_fitness += 1 / f
 	roulette_value = random.uniform(0, total_fitness)
-	# applying random value
+
 	current_value = 0
 	for individual, fitness_value in zip(population, fitness_values):
 		current_value += (1 / fitness_value)
@@ -66,12 +65,11 @@ def roulette_selection(population, fitness_values):
 			return individual
 
 
-# Кроссовер двух родителей
 def crossover(parent_1, parent_2):
 
 	start, end = sorted(random.sample(range(len(parent_1)), 2))
 	child = [-1] * len(parent_1)
-	child[start:end + 1] = parent_1[start:end + 1]
+	child[start:end+1] = parent_1[start:end+1]
 
 	pointer = 0
 	for city in parent_2:
@@ -82,14 +80,13 @@ def crossover(parent_1, parent_2):
 	return child
 
 
-# Мутация (обмен местами двух соседних городов)
 def mutate(individual):
 	if random.random() < mutation_rate:
 		i = random.randint(0, len(individual) - 2)
 		individual[i], individual[i + 1] = individual[i + 1], individual[i]
 
 
-# Основная функция генетического алгоритма
+
 def genetic_algorithm():
 	population = generate_population(population_size)
 	helper = 999999999
@@ -102,7 +99,6 @@ def genetic_algorithm():
 
 		new_population = []
 		for _ in range(population_size):
-			# Смешиваем два метода выбора родителей
 
 			if random.random() < 0.5:
 				parent_1 = tournament_selection(population, fitness_values)
@@ -124,7 +120,7 @@ def genetic_algorithm():
 			helper = fitness_values[generation]
 			print(f"Generation {generation}, Best distance: {fitness_values[generation]}")
 
-	# Возвращаем лучшее решение
+
 	best_route = population[fitness_values.index(min(fitness_values))]
 	return best_route, min(fitness_values)
 
@@ -140,7 +136,6 @@ def plot_route(route, best_distance):
 	for i, (xi, yi) in enumerate(Cities):
 		plt.text(xi, yi, f"City {i + 1}", fontsize=12)
 
-	# Добавление текста для итогового пути
 	plt.title(f'Best Route Found by Genetic Algorithm: {best_distance}', fontsize=10)
 
 	plt.legend()
@@ -148,6 +143,6 @@ def plot_route(route, best_distance):
 	plt.show()
 
 
-# Запуск алгоритма и визуализация лучшего маршрута
+
 best_route, best_distance = genetic_algorithm()
 plot_route(best_route, best_distance)
