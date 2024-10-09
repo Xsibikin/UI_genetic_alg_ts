@@ -2,34 +2,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-# Заранее определенные координаты 40 городов
 Cities = [
 	(69, 55), (63, 148), (135, 144), (74, 48), (30, 26),
 	(148, 67), (151, 183), (80, 196), (194, 92), (141, 152),
 	(73, 78), (82, 17), (60, 159), (142, 159), (96, 24),
 	(97, 6), (168, 80), (78, 179), (175, 49), (42, 138),
-	(83, 116), (153, 89), (137, 60), (45, 5), (91, 150),
-	(168, 190), (194, 116), (50, 196), (150, 10), (10, 100),
-	(150, 50), (190, 150), (80, 160), (120, 50), (110, 10),
-	(10, 190), (190, 10), (10, 10), (190, 190), (50, 50)
+	#(83, 116), (153, 89), (137, 60), (45, 5), (91, 150),
+	#(168, 190), (194, 116), (50, 196), (150, 10), (10, 100),
+	#(150, 50), (190, 150), (80, 160), (120, 50), (110, 10),
+	#(10, 190), (190, 10), (10, 10), (190, 190), (50, 50)
 ]
 
-# Параметры генетического алгоритма
-population_size = 800  # Размер популяции
-generations = 400  # Количество поколений
-mutation_rate = 0.02  # Вероятность мутации (1-2%)
+population_size = 800
+generations = 400
+mutation_rate = 0.02
 tournament_size = 5
 
 
-# Функция для вычисления расстояния между двумя точками
+
 def distance(city1, city2):
 	return np.sqrt((city1[0] - city2[0]) ** 2 + (city1[1] - city2[1]) ** 2)
 
 
-# Фитнесс-функция (суммарное расстояние по маршруту)
 def fitness(route):
-	total_distance = sum(distance(Cities[route[i]], Cities[route[i + 1]]) for i in range(len(route) - 1))
-	total_distance += distance(Cities[route[-1]], Cities[route[0]])  # Замыкаем маршрут
+	td = 0
+	for i in range(len(route) - 1):
+		td += distance(Cities[route[i]], Cities[route[i + 1]])
+	total_distance = td
+	total_distance += distance(Cities[route[-1]], Cities[route[0]])
 	return total_distance
 
 
@@ -44,6 +44,7 @@ def generate_population(population_size):
 
 
 def tournament_selection(population, fitness_values):
+
 	fitness_dict = list(zip(population, fitness_values))
 	tournament_dict = random.sample(fitness_dict, tournament_size)
 	tournament_dict.sort(key=lambda x: x[1])
@@ -91,13 +92,13 @@ def mutate(individual):
 # Основная функция генетического алгоритма
 def genetic_algorithm():
 	population = generate_population(population_size)
-	helper = 9999999
+	helper = 999999999
 
 	for generation in range(generations):
 
 		fitness_values = []
-		for ind in population:
-			fitness_values.append(fitness(ind))
+		for index in population:
+			fitness_values.append(fitness(index))
 
 		new_population = []
 		for _ in range(population_size):
@@ -126,21 +127,6 @@ def genetic_algorithm():
 	# Возвращаем лучшее решение
 	best_route = population[fitness_values.index(min(fitness_values))]
 	return best_route, min(fitness_values)
-
-
-# Функция для визуализации маршрута
-# def plot_route(route):
-#     plt.figure(figsize=(8, 8))
-#     x = [Cities[i][0] for i in route] + [Cities[route[0]][0]]
-#     y = [Cities[i][1] for i in route] + [Cities[route[0]][1]]
-#     plt.plot(x, y, 'o-', label='Route')
-#     plt.scatter([c[0] for c in Cities], [c[1] for c in Cities], c='red')
-#     for i, (xi, yi) in enumerate(Cities):
-#         plt.text(xi, yi, f"City {i + 1}", fontsize=12)
-#     plt.title('Best Route Found by Genetic Algorithm')
-#     plt.legend()
-#     plt.grid(True)
-#     plt.show()
 
 
 def plot_route(route, best_distance):
